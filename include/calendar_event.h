@@ -2,23 +2,18 @@
 #define CALENDAR_EVENT_H
 
 #include <stdlib.h>
+#include <string>
+#include <ctime>
 
 class CalendarEvent {
-  char* name;
-  int year, month, day, hour, minute;
+  std::string name;
+  std::tm time;
 
   public:
-    CalendarEvent(std::string name, int year, int month, int day, int hour, int minute);
-
-    void setName (std::string name);
-    void setTime (int year, int month, int day, int hour, int minute);
+    CalendarEvent(std::string name, std::tm time);
 
     std::string getName();
-    int   getMinute();
-    int   getHour();
-    int   getDay();
-    int   getMonth();
-    int   getYear();
+    std::tm getTime();
 };
 
 #endif

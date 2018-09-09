@@ -3,6 +3,8 @@
 
 #include "cxxopts.hpp"
 
+#include "config_options.h"
+
 const std::string DEFAULT_STORAGE_PATH = "/tmp"
 
 ConfigOptions::ConfigOptions(int argc, char **argv) {
