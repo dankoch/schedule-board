@@ -5,6 +5,9 @@
 #include <string>
 #include <ctime>
 
+#include <nlohmann/json.hpp>
+using nlohmann::json;
+
 class CalendarEvent {
   std::string name;
   std::tm time;
@@ -27,6 +30,11 @@ class CalendarEvent {
     void setDay(int day);
     void setHour(int hour);
     void setMinute(int minute);
+
+    void setTime(std::tm newTime);
+
+    void to_json(json& j, const CalendarEvent& event);
+    void from_json(const json& j, CalendarEvent& event);
 };
 
 #endif

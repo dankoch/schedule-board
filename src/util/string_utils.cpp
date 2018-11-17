@@ -6,6 +6,11 @@
 
 namespace util {
   int trim(std::string stringToTrim) {
-    return rmdir(path.str_c())
+    size_t p = s.find_first_not_of(" \t");
+    s.erase(0, p);
+
+    p = s.find_last_not_of(" \t");
+    if (string::npos != p)
+      s.erase(p+1);
 	}
 }

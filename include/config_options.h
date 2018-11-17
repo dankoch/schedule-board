@@ -7,12 +7,13 @@
 #include "cxxopts.hpp"
 
 class ConfigOptions {
-  std::string storagePath
 
   public:
     ConfigOptions(int argc, char **argv);
 
-    std::string getStoragePath;
+    std::string getStoragePath();
+    std::string getLogPath();
+    std::string getLogLevel();
 };
 
 #endif

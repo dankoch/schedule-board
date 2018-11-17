@@ -10,3 +10,6 @@
 [submodule "lib/gumbo-parser"]
 	path = lib/gumbo-parser
 	url = git@github.com:google/gumbo-parser.git
+[submodule "lib/json"]
+	path = lib/json
+	url = git@github.com:nlohmann/json.git

@@ -2,6 +2,9 @@
 #include <string>
 #include <ctime>
 
+#include <nlohmann/json.hpp>
+using nlohmann::json;
+
 #include "calendar_event.h"
 
 class CalendarEvent {
@@ -22,7 +25,7 @@ public:
   }
 
   void setCalendarYear(int year) {
-    time.tm_year = year - 1970;
+    time.tm_year = year - 1900;
   }
 
   void setMonth(int month) {
@@ -40,4 +43,25 @@ public:
   void setMinute(int minute) {
     time.tm_min = minute;
   }
+
+  void setTime(std::tm newTime) {
+    time = newTime;
+  }
+
+  void to_json(json& j, const CalendarEvent& event) {
+    char buffer[25];
+
+    j = json{
+             {"name", event.getName()}, 
+             {"time", strftime(buffer, 25, "%FT%TZ", event.getTime())}
+            };
+  }
+
+  void from_json(const json& j, CalendarEvent& event) {
+      event.setName(j.at("name").get<std::string>());
+
+      char buffer[40];
+      event.setTime(strptime(buffer, "%FT%TZ", j.at("time").get<std::string>()));
+  }
+
 }

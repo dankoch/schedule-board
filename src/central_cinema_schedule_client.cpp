@@ -42,21 +42,15 @@ class CentralCinemaScheduleClient : ScheduleClient {
   };
 
   struct FetchedDataMetadata {
-    
+
   }
 
 public:
   CentralCinemaScheduleClient(std::shared_ptr<ConfigOptions> options) : _options(options) {
-    _logger = spdlog::get("schedule_client_logger");
+    _logger = spdlog::get("schedule_board_logger");
   }
 
-  vector<CalendarEvent> getCalendarEvents(std::tm* startDate, std::tm* endDate) {
-
-  }
-
-private:
-
-  void fetchCalendarData(std::tm* startDate, std::tm* endDate); {
+  vector<CalendarEvent> fetchCalendarData(std::tm* startDate, std::tm* endDate) {
     std::vector<CalendarEvent> fetchedEvents;
 
     /* Determine which buckets need to be queried. */
@@ -95,15 +89,15 @@ private:
       }
     }
 
-    /* If we succesfully downloaded any files, extract the events from them and overwrite our data file.*/
-    if (downloadedMonths.size() > 0) {
-      for (auto const monthExtract : downloadedMonths) {
-        parseTicketBiscuitCalendarExtract(monthExtract, fetchedEvents);
-      }
-
-      std::sort(fetchedEvents.begin(), fetchedEvents.end());
+    /* Extract the events from our files and overwrite our data file.*/
+    for (auto const monthExtract : downloadedMonths) {
+      parseTicketBiscuitCalendarExtract(monthExtract, fetchedEvents);
     }
+
+    return fetchedEvents;
   }
+
+private:
 
   int downloadTicketBiscuitCalendarExtract(std::string dir, MonthRequest bucket, MonthRequest* monthExtract) {
     int returnCode = -1;
@@ -162,10 +156,6 @@ private:
 
     sprintf(buffer, URL_TEMPLATE.c_str(), bucket.year, bucket.month);
     return std::string(buffer);
-  }
-
-  std::string baseDirectory() {
-    return _options->getStoragePath() + FILE_SUBPATH;
   }
 
 
@@ -232,6 +222,14 @@ private:
       traverseTicketBiscuitEventCell(static_cast<GumboNode*>(children->data[i]));
     }    
   }
+
+  std::string baseDirectory() {
+    return _options->getStoragePath() + FILE_SUBPATH;
+  }
+
+  std::string eventCacheFilePath() {
+    return baseDirectory() + LOCAL_EVENT_CACHE_FILE;
+  }
 };
 
 static std::string getNodeText(GumboNode *node) {
@@ -251,9 +249,4 @@ static std::string getNodeText(GumboNode *node) {
   }
 
   return "";
-}
-
-int main(int argc, char** argv) {
-  std::shared_ptr<ConfigOptions> options(new ConfigOptions(argc, argv));
-  auto console = spdlog::stdout_color_mt("schedule_client_logger");
 }
