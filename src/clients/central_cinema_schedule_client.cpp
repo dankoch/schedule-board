@@ -4,7 +4,6 @@
 #include <string>
 #include <ctime>
 #include <time.h>
-#include <curl/curl.h>
 #include <algorithm>
 
 #include "spdlog/spdlog.h"
@@ -14,8 +13,11 @@
 #include "calendar_event.h"
 #include "file_utils.h"
 #include "string_utils.h"
+#include "http_utils.h"
 
 #include "schedule_client.h"
+#include "central_cinema_schedule_client.h"
+
 
 class CentralCinemaScheduleClient : ScheduleClient {
   const std::string TB_MONTH_EVENT_TABLE_CELL_CLASS = "futureday";
@@ -33,7 +35,7 @@ class CentralCinemaScheduleClient : ScheduleClient {
   shared_ptr<ConfigOptions> _options;
   std::shared_ptr<spdlog::logger> _logger;
 
-  std::vector<CalendarEvent> loadedCalendarEvents;
+  std::function<int(std::string, std::string)> httpGetToFile;
 
   struct MonthRequest {
     int month,
@@ -41,13 +43,12 @@ class CentralCinemaScheduleClient : ScheduleClient {
     std::string filePath
   };
 
-  struct FetchedDataMetadata {
-
-  }
-
 public:
   CentralCinemaScheduleClient(std::shared_ptr<ConfigOptions> options) : _options(options) {
     _logger = spdlog::get("schedule_board_logger");
+
+    // Set the HTTP Fetch method to be via the util cURL wrapper call (to be overridden for mocking/testing)
+    httpGetToFile = util::httpGetToFile;
   }
 
   vector<CalendarEvent> fetchCalendarData(std::tm* startDate, std::tm* endDate) {
@@ -97,58 +98,30 @@ public:
     return fetchedEvents;
   }
 
+  ~CentralCinemaScheduleClient() {
+
+  }
+
 private:
 
   int downloadTicketBiscuitCalendarExtract(std::string dir, MonthRequest bucket, MonthRequest* monthExtract) {
-    int returnCode = -1;
 
     /* Ensure the target directory for the download extract exists. */
     createStorageDir(dir);
 
+    /* Build the URL and target directory. */
     std::string requestURL = buildTicketBiscuitRequestURL(bucket);
     std::string requestDestination = dir + "/" + to_string(year) + "_" + to_string(month) + ".html";
 
-    CURL *curl;
-    CURLcode res;
-    char errbuf[CURL_ERROR_SIZE];
- 
-    curl_global_init(CURL_GLOBAL_DEFAULT);
-    curl = curl_easy_init();
+    /* Make the request.  If it succeeds – set the MonthExtract with the necessary information and return. */
+    if (util::httpGetToFile(requestUrl, requestDestination) == 0) {
+      monthExtract = new MonthRequest(bucket.month, bucket.year, requestDestination);      
 
-    if(curl) {
-      curl_easy_setopt(curl, CURLOPT_URL, requestURL);
-      curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeData);
-      curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
-
-      curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuf);
-      errbuf[0] = 0;
-
-      FILE* pagefile = fopen(requestDestination, "wb");
-      if(pagefile) {
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, pagefile);
-        res = curl_easy_perform(curl);
-        fclose(pagefile);
-      }
-
-      _logger->info("Made request to: {} to write output to {}", requestURL, requestDestination);
-
-      if(res != CURLE_OK) {
-        size_t len = strlen(errbuf);
-
-        if(len)
-          _logger->error("Failed making request to: {}, {}", requestURL, errbuf);
-        else
-          _logger->error("Failed making request to: {}, {}", requestURL, curl_easy_strerror(res));
-      } else {
-        monthExtract = new MonthRequest(bucket.month, bucket.year, requestDestination);
-        returnCode = 0;
-      }
-
-      curl_easy_cleanup(curl_handle);
-      curl_global_cleanup();
+      return 0;
     }
 
-    return returnCode;
+    /* Didn't work out.*/
+    return -1;
   }
 
   std::string buildTicketBiscuitRequestURL(MonthRequest bucket) {
@@ -225,10 +198,6 @@ private:
 
   std::string baseDirectory() {
     return _options->getStoragePath() + FILE_SUBPATH;
-  }
-
-  std::string eventCacheFilePath() {
-    return baseDirectory() + LOCAL_EVENT_CACHE_FILE;
   }
 };
 

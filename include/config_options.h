@@ -9,11 +9,20 @@
 class ConfigOptions {
 
   public:
+    /* Used to initialize an 'all-default' version of ConfigOptions.  For use in testing.*/
+    ConfigOptions();
+
+    /* Used to initialize ConfigOptions from command line arguments. */
     ConfigOptions(int argc, char **argv);
 
     std::string getStoragePath();
+    void setStoragePath(std::string path);
+
     std::string getLogPath();
+    void setLogPath(std::string logPath);
+
     std::string getLogLevel();
+    void setLogLevel(std::string logLevel);
 };
 
 #endif

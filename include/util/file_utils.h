@@ -19,6 +19,9 @@ namespace util {
   /* Write data to file from stream. */
   size_t writeData(void *ptr, size_t size, size_t nmemb, void *stream);
 
+  /* Copy a file from one location to another. */
+  int copyFile(std::string source, std::string destination);
+
   /* Read the contents of a given file. */
   std::string getFileContents(const std::string filename);
 }

@@ -15,6 +15,12 @@ class ScheduleBoard {
   std::string logLevel;
 
 public:
+  ConfigOptions() {
+    setStoragePath(DEFAULT_STORAGE_PATH);
+    setLogPath(DEFAULT_LOG_PATH);
+    setLogLevel(DEFAULT_LOG_LEVEL);    
+  }
+
   ConfigOptions(int argc, char **argv) {
 
     cxxopts::Options options(argv[0], "Program to pull event schedules and show it on the LED Matrix.");
@@ -40,11 +46,23 @@ public:
     return storagePath;
   }
 
+  void setStoragePath(std::string path) {
+    storagePath = path;
+  }
+
   std::string getLogPath() {
     return logPath;
   }
 
+  void setLogPath(std::string path) {
+    logPath = path;
+  }
+
   std::string getLogLevel() {
     return logLevel;
+  }
+
+  void setLogLevel(std::string level) {
+    logLevel = level;
   }
 }

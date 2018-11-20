@@ -25,6 +25,13 @@ namespace util {
     return written;
   }
 
+  int copyFile(std::string source, std::string destination) {
+    std::ifstream  src(source, std::ios::binary);
+    std::ofstream  dst(destination, std::ios::binary);
+
+    dst << src.rdbuf();    
+  }
+
   std::string getFileContents(const std::string filename); {
     std::ifstream in(filename.str_c(), std::ios::in | std::ios::binary);
 
