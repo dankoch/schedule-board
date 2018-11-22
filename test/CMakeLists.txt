@@ -23,7 +23,7 @@ target_include_directories(scheduleBoardTest
 # Register the tests.
 include(GoogleTest)
 gtest_add_tests(
-    TARGET ScheduleBoardTest
+    TARGET scheduleBoardTest
     SOURCES ${SCHEDULE_BOARD_TEST_SOURCES}
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
     DISCOVERY_TIMEOUT 30

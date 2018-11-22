@@ -7,8 +7,10 @@ set(VERSION_MAJOR 0)
 set(VERSION_MINOR 1)
 set(VERSION_PATCH 0)
 
-# Create and set the target build directory.
+# Create and set the output directories.
 set(PROJECT_BINARY_DIR ${PROJECT_SOURCE_DIR}/build)
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/build)
+set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/build)
 
 # Add safeguard checks.
 include(cmake/safeguards.cmake)
@@ -36,7 +38,7 @@ configure_file(
 )
 
 # Create our core project library.
-add_library(scheduleBoardLib)
+add_library(scheduleBoardLib STATIC)
 
 # Create our executables and link them against the core library.
 add_executable(scheduleBoard src/main.cpp)
