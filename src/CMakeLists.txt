@@ -1,6 +1,6 @@
 target_sources(scheduleBoardLib
     PRIVATE
-        "${CMAKE_CURRENT_LIST_DIR}/clients/central_cinema_schedule_client.cpp"
+        "${CMAKE_CURRENT_LIST_DIR}/client/central_cinema_schedule_client.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/util/file_utils.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/util/http_utils.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/util/string_utils.cpp"

@@ -20,7 +20,7 @@ class ScheduleClient {
     * @param startDate Start date for the calendar data to fetch.
     * @param endDate End date for the calendar data to fetch.
     */
-    virtual vector<CalendarEvent> fetchCalendarData(std::tm* startDate, std::tm* endDate) = 0;
+    virtual std::vector<CalendarEvent> fetchCalendarData(std::tm* startDate, std::tm* endDate) = 0;
 };
 
 #endif

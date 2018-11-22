@@ -1,16 +1,20 @@
 # SCHEDULE BOARD LED 
 cmake_minimum_required(VERSION 3.11.0)
-project(schedule_board c cxx)
+project(scheduleBoard)
 
 # Set product version.
 set(VERSION_MAJOR 0)
 set(VERSION_MINOR 1)
 set(VERSION_PATCH 0)
 
+# Create and set the target build directory.
+set(PROJECT_BINARY_DIR ${PROJECT_SOURCE_DIR}/build)
+
 # Add safeguard checks.
 include(cmake/safeguards.cmake)
 
 # Set compiler flags.
+set (CMAKE_CXX_STANDARD 11)
 if(CMAKE_CXX_COMPILER_ID MATCHES GNU)
     set(CMAKE_CXX_FLAGS         "${CMAKE_CXX_FLAGS} -Wall -Wno-unknown-pragmas -Wno-sign-compare -Woverloaded-virtual -Wwrite-strings -Wno-unused")
     set(CMAKE_CXX_FLAGS_DEBUG   "-O0 -g3")
@@ -35,7 +39,7 @@ configure_file(
 add_library(scheduleBoardLib)
 
 # Create our executables and link them against the core library.
-add_executable(scheduleBoard)
+add_executable(scheduleBoard src/main.cpp)
 target_link_libraries(scheduleBoard scheduleBoardLib)
 
 add_executable(scheduleBoardTest)

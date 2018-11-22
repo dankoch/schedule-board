@@ -24,6 +24,7 @@ set(JSON_BuildTests OFF CACHE INTERNAL "")
 # Pull in the CMake subdirectory and link.
 add_subdirectory("${json_dir}")
 target_link_libraries(scheduleBoardLib PRIVATE nlohmann_json::nlohmann_json)
+target_include_directories(scheduleBoardLib PUBLIC "${json_dir}/include")
 
 
 #---------------------------------------------------------------------------------------
@@ -33,7 +34,7 @@ target_link_libraries(scheduleBoardLib PRIVATE nlohmann_json::nlohmann_json)
 set(gumbo_dir ${CMAKE_CURRENT_LIST_DIR}/gumbo-parser)
 
 # Accrue Gumbo source files.
-set(gumbo_0_10_1_SRCS
+set(gumbo_SRCS
     ${gumbo_dir}/src/attribute.c
     ${gumbo_dir}/src/attribute.h
     ${gumbo_dir}/src/char_ref.c
@@ -77,14 +78,21 @@ target_link_libraries(scheduleBoardLib PUBLIC gumbo)
 # INCLUDE SPDLOG LIBRARY
 #---------------------------------------------------------------------------------------
 
-set(spdlog_dir ${CMAKE_CURRENT_LIST_DIR}/json)
+set(spdlog_dir ${CMAKE_CURRENT_LIST_DIR}/spdlog)
 
 # Invoke the SPDLOG process.
 add_subdirectory("${spdlog_dir}")
 
 # Reference the headers and library.
-target_include_directories(scheduleBoardLib ${spdlog_dir}/include)
-target_link_libraries(scheduleBoardLib PRIVATE spdlog)
+target_include_directories(scheduleBoardLib 
+    PUBLIC 
+        "${spdlog_dir}/include"
+)
+
+# Skip tests and other side projects.
+SET(SPDLOG_BUILD_TESTING OFF CACHE BOOL "Test SPDLOG" FORCE)
+SET(SPDLOG_BUILD_EXAMPLES OFF CACHE BOOL "SPDLOG Examples" FORCE)
+SET(SPDLOG_BUILD_BENCH OFF CACHE BOOL "SPDLOG Bench" FORCE)
 
 
 #---------------------------------------------------------------------------------------
@@ -109,3 +117,15 @@ include_directories(${googletest_dir}/googletest/include
 
 # Link against our testing executable.
 target_link_libraries(scheduleBoardTest gtest gtest_main gmock gmock_main)
+
+
+#---------------------------------------------------------------------------------------
+# INCLUDE CURL LIBRARY
+#---------------------------------------------------------------------------------------
+
+# Use the CMake Modules to find the locally installed packages.
+include(FindCURL)
+
+# Include and link CURL
+include_directories(${CURL_INCLUDE_DIR})
+target_link_libraries(scheduleBoardLib PRIVATE ${CURL_LIBRARIES})

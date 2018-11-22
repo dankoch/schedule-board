@@ -1,5 +1,5 @@
-#ifndef STRING_UTILS_H
-#define STRING_UTILS_H
+#ifndef HTTP_UTILS_H
+#define HTTP_UTILS_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,3 +17,5 @@ namespace util {
   */
   int httpGetToFile(std::string url, std::string destinationPath);
 }
+
+#endif

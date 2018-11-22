@@ -2,15 +2,17 @@
 #include <string>
 #include <iostream>
 
-#include "string_utils.h"
+#include "util/string_utils.h"
 
 namespace util {
-  int trim(std::string stringToTrim) {
-    size_t p = s.find_first_not_of(" \t");
-    s.erase(0, p);
+  std::string trim(std::string stringToTrim) {
+    size_t place = stringToTrim.find_first_not_of(" \t");
+    stringToTrim.erase(0, place);
 
-    p = s.find_last_not_of(" \t");
-    if (string::npos != p)
-      s.erase(p+1);
+    place = stringToTrim.find_last_not_of(" \t");
+    if (std::string::npos != place)
+      stringToTrim.erase(place+1);
+
+    return stringToTrim;
 	}
 }

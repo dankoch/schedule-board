@@ -3,7 +3,7 @@ enable_testing()
 
 # Test and test-relevant files.
 set(SCHEDULE_BOARD_TEST_SOURCES
-      ${CMAKE_CURRENT_LIST_DIR}/clients/central_cinema_schedule_client_unittest.cpp
+      ${CMAKE_CURRENT_LIST_DIR}/client/central_cinema_schedule_client_unittest.cpp
       ${CMAKE_CURRENT_LIST_DIR}/mock/mock_http_utils.hpp
 )
 
@@ -13,14 +13,16 @@ target_sources(scheduleBoardTest
       ${SCHEDULE_BOARD_TEST_SOURCES}
 )
 
-target_include_directories(ScheduleBoardTest 
-                              ${CMAKE_CURRENT_LIST_DIR}
-                              ${CMAKE_CURRENT_LIST_DIR}/mock
-                              ${CMAKE_CURRENT_LIST_DIR}/clients
+target_include_directories(scheduleBoardTest 
+    PRIVATE
+        ${CMAKE_CURRENT_LIST_DIR}
+        ${CMAKE_CURRENT_LIST_DIR}/mock
+        ${CMAKE_CURRENT_LIST_DIR}/client
 )
 
 # Register the tests.
-gtest_discover_tests(
+include(GoogleTest)
+gtest_add_tests(
     TARGET ScheduleBoardTest
     SOURCES ${SCHEDULE_BOARD_TEST_SOURCES}
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}

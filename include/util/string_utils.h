@@ -8,5 +8,7 @@
 namespace util {
 
 	/* Trims leading and trailing whitespace from stringToTrim. */
-  int trim(std::string stringToTrim);
+  std::string trim(std::string stringToTrim);
 }
+
+#endif

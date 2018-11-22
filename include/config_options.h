@@ -8,21 +8,26 @@
 
 class ConfigOptions {
 
-  public:
-    /* Used to initialize an 'all-default' version of ConfigOptions.  For use in testing.*/
-    ConfigOptions();
+private:
+  std::string storagePath;
+  std::string logPath;
+  std::string logLevel;
 
-    /* Used to initialize ConfigOptions from command line arguments. */
-    ConfigOptions(int argc, char **argv);
+public:  /* Used to initialize an 'all-default' version of ConfigOptions.  For use in testing.*/
+  ConfigOptions();
 
-    std::string getStoragePath();
-    void setStoragePath(std::string path);
+  /* Used to initialize ConfigOptions from command line arguments. */
+  ConfigOptions(int argc, char **argv);
 
-    std::string getLogPath();
-    void setLogPath(std::string logPath);
+  std::string getStoragePath() const;
+  void setStoragePath(std::string path);
 
-    std::string getLogLevel();
-    void setLogLevel(std::string logLevel);
+  std::string getLogPath() const;
+  void setLogPath(std::string logPath);
+
+  std::string getLogLevel() const;
+  void setLogLevel(std::string logLevel);
+
 };
 
 #endif

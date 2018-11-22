@@ -7,17 +7,19 @@
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
-#include "file_utils.h"
+#include "util/file_utils.h"
 #include "calendar_event.h"
 
 #include "mock_http_utils.hpp"
 
-#include "central_cinema_schedule_client.h"
+#include "client/central_cinema_schedule_client.h"
 #include "config_options.h"
 
 using namespace std::placeholders;
 using ::testing::_;
 using ::testing::Return;
+using ::testing::SaveArg;
+using ::testing::InvokeWithoutArgs;
 
 namespace {
 
@@ -25,24 +27,23 @@ class CentralCinemaScheduleClientTest : public testing::Test {
 
 protected:
   util::MockHttpUtil mockHttpUtil;
-
   std::shared_ptr<ConfigOptions> _config;
-  ScheduleClient centralCinemaScheduleClient;
 
+  CentralCinemaScheduleClient *centralCinemaScheduleClient;
 
   virtual void SetUp() {
     /* Build the client instance, populated with our testing configuration. */
     std::shared_ptr<ConfigOptions> _config = std::make_shared<ConfigOptions>();
     _config->setStoragePath("test/tmp");
 
-    centralCinemaScheduleClient = CentralCinemaScheduleClient(_config);
+    centralCinemaScheduleClient = new CentralCinemaScheduleClient(_config);
 
     /* Bind the httpGetToFile method of the mock class to the http fetch function used by the client. */
-    centralCinemaScheduleClient.httpGetToFile = std::bind(&MockHttpUtil::httpGetToFile, &mockHttpUtil, _1, _2);
+    centralCinemaScheduleClient->httpGetToFile = std::bind(&util::MockHttpUtil::httpGetToFile, &mockHttpUtil, _1, _2);
   }
 
   virtual void TearDown() {
-    delete _config;
+
   }
 };
 
@@ -53,13 +54,12 @@ TEST_F(CentralCinemaScheduleClientTest, FetchCalendarEventsForAMonth) {
 
   EXPECT_CALL(mockHttpUtil, 
     httpGetToFile("https://public.ticketbiscuit.com/CentralCinema/Calendar/2018/11", _))
-    .Times(1)
-    .DoAll(
+    .WillOnce(DoAll(
       SaveArg<1>(&downloadFileDestination),
       InvokeWithoutArgs([=](){
-        util::copyFile("./test/data/clients/central_schedule_201811.html",,downloadFileDestination);
+        util::copyFile("./test/data/client/central_schedule_201811.html",downloadFileDestination);
       }),
-      Return(0));
+      Return(0)));
 
   std::tm startDate;
   strptime("2018-11-01 00:00", "%Y-%m-%dT %H:%M", &startDate);
@@ -67,8 +67,8 @@ TEST_F(CentralCinemaScheduleClientTest, FetchCalendarEventsForAMonth) {
   std::tm endDate;
   strptime("2018-11-30 23:59", "%Y-%m-%dT %H:%M", &startDate);
 
-  vector<CalendarEvent> resultVector = centralCinemaScheduleClient.fetchCalendarEvents(&startDate, &endDate);
-  EXPECT_EQ(resultVector.size, 23);
+  std::vector<CalendarEvent> resultVector = centralCinemaScheduleClient->fetchCalendarData(&startDate, &endDate);
+  EXPECT_EQ(resultVector.size(), 23);
 }
 
 /* Test to confirm that nothing tries to get fetched if the start date is after the end date. */

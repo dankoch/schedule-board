@@ -2,21 +2,24 @@
 #include <stdlib.h>
 #include <string>
 #include <fstream>
+#include <unistd.h>
+#include "sys/stat.h"
 
-#include "file_utils.h"
+#include "util/file_utils.h"
 
 namespace util {
   int removeDirectory(std::string path) {
-    return rmdir(path.str_c())
+    return rmdir(path.c_str());
 	}
 
   int createDirectory(std::string path) {
-    mkdir(path.str_c(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+    return mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
   }
 
   int clearDirectory(std::string path) {
     removeDirectory(path);
-    createDirectory(path);
+
+    return createDirectory(path);
   }
 
   size_t writeData(void *ptr, size_t size, size_t nmemb, void *stream) {
@@ -25,15 +28,15 @@ namespace util {
     return written;
   }
 
-  int copyFile(std::string source, std::string destination) {
+  void copyFile(std::string source, std::string destination) {
     std::ifstream  src(source, std::ios::binary);
     std::ofstream  dst(destination, std::ios::binary);
 
-    dst << src.rdbuf();    
+    dst << src.rdbuf();
   }
 
-  std::string getFileContents(const std::string filename); {
-    std::ifstream in(filename.str_c(), std::ios::in | std::ios::binary);
+  std::string getFileContents(const std::string filename) {
+    std::ifstream in(filename.c_str(), std::ios::in | std::ios::binary);
 
     if (in)
     {
